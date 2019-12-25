@@ -21,6 +21,9 @@ export default class ArticulateChatbotWidget extends Component {
     this.clearChat = this.clearChat.bind(this);
     this.restartSession = this.restartSession.bind(this);
     this.renderBotResponse = this.renderBotResponse.bind(this);
+    this.scrollToBottomOfChat = this.scrollToBottomOfChat.bind(this);
+    this.getUserPosition = this.getUserPosition.bind(this);
+    this.handleLocationAccessError = this.handleLocationAccessError.bind(this)
     this.state = {
       anchorEl: null,
       openMenu: false,
@@ -119,6 +122,7 @@ export default class ArticulateChatbotWidget extends Component {
       ],
       client: null,
       socketClientConnected: false,
+      messagesCount: 6,
     }
   }
 
@@ -135,10 +139,10 @@ export default class ArticulateChatbotWidget extends Component {
     return sessionId;
   }
 
-  componentWillMount() {
-    const { socketUrl, socketPath } = this.props;
+  componentDidMount() {
+    const { articulateHost, articulateWSPort, connectionId } = this.props;
     if (!this.state.socketClientConnected) {
-      const client = new Nes.Client(socketUrl, { timeout: 30000 });
+      const client = new Nes.Client(`ws://${articulateHost}:${articulateWSPort}`, { timeout: 30000 });
       client.onConnect = () => {
         this.setState({
           client,
@@ -152,7 +156,7 @@ export default class ArticulateChatbotWidget extends Component {
         };
 
         const sessionId = this.getSessionId();
-        client.subscribe(`${socketPath}/${sessionId}`, handler);
+        client.subscribe(`/connection/${connectionId}/external/${sessionId}`, handler);
       };
       client.connect();
     }
@@ -180,7 +184,7 @@ export default class ArticulateChatbotWidget extends Component {
   addNewUserMessage(message) {
     const { userMessage, messages } = this.state;
     if (userMessage || message) {
-      const { converseUrl } = this.props;
+      const { articulateHost, articulatePort, connectionId } = this.props;
       const sessionId = this.getSessionId();
       const messageToUse = message || userMessage;
       const postPayload = {
@@ -190,7 +194,7 @@ export default class ArticulateChatbotWidget extends Component {
       messages.push({
         message: messageToUse
       });
-      fetch(converseUrl, {
+      fetch(`http://${articulateHost}:${articulatePort}/api/connection/${connectionId}/external`, {
         method: 'post',
         body: JSON.stringify(postPayload)
       });
@@ -203,9 +207,9 @@ export default class ArticulateChatbotWidget extends Component {
   }
 
   restartSession() {
-    const { connectionId } = this.props;
+    const { connectionId, articulateHost, articulatePort } = this.props;
     const sessionId = this.getSessionId();
-    fetch(`http://localhost:8080/api/context/${sessionId + connectionId}`, {
+    fetch(`http://${articulateHost}:${articulatePort}/api/context/${sessionId + connectionId}`, {
       method: 'delete'
     });
     this.clearChat();
@@ -215,9 +219,25 @@ export default class ArticulateChatbotWidget extends Component {
     this.setState({
       userMessage: '',
       messages: [],
-      botIsTyping: false
+      botIsTyping: false,
+      messagesCount: 0
     });
     this.handleClickMenu();
+  }
+
+  scrollToBottomOfChat() {
+    const terminalResultsDiv = document.getElementById("chats");
+    terminalResultsDiv.scrollTop = terminalResultsDiv.scrollHeight + 100;
+  }
+
+  componentDidUpdate(){
+    const { messagesCount, messages } = this.state;
+    if (messagesCount < messages.length){
+      this.setState({
+        messagesCount: messages.length
+      });
+      this.scrollToBottomOfChat();
+    }
   }
 
   renderBotResponse(response, index) {
@@ -336,46 +356,55 @@ export default class ArticulateChatbotWidget extends Component {
         );
       case 'location':
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(getUserPosition, handleLocationAccessError);
+          navigator.geolocation.getCurrentPosition(this.getUserPosition, this.handleLocationAccessError);
         } else {
           response = 'Geolocation is not supported by this browser.';
         }
         break;
+      default:
+        return (
+          <React.Fragment key={`message_${index}`}>
+            <img className="botAvatar" src={botAvatarImage} />
+            <p className="botMsg">{response.textResponse}</p>
+            <div className="clearfix" />
+          </React.Fragment>
+        )
     }
   }
 
   getUserPosition(position) {
-    response = `Latitude: ${position.coords.latitude} Longitude: ${position.coords.longitude}`;
-    console.log('location: ', response);
+    const textResponse = `Latitude: ${position.coords.latitude} Longitude: ${position.coords.longitude}`;
 
+    this.addNewUserMessage(textResponse);
     // here you add the intent which you want to trigger
-    response = `/inform{"latitude":${position.coords.latitude},"longitude":${position.coords.longitude}}`;
+    /*response = `/inform{"latitude":${position.coords.latitude},"longitude":${position.coords.longitude}}`;
     $('#userInput').prop('disabled', false);
     send(response);
-    showBotTyping();
+    showBotTyping();*/
   }
 
   handleLocationAccessError(error) {
+    console.error("AN ERROR OCURRED??: ", error);
     switch (error.code) {
       case error.PERMISSION_DENIED:
-        console.log('User denied the request for Geolocation.')
+        console.error('User denied the request for Geolocation.')
         break;
       case error.POSITION_UNAVAILABLE:
-        console.log('Location information is unavailable.')
+        console.error('Location information is unavailable.')
         break;
       case error.TIMEOUT:
-        console.log('The request to get user location timed out.')
+        console.error('The request to get user location timed out.')
         break;
       case error.UNKNOWN_ERROR:
-        console.log('An unknown error occurred.')
+        console.error('An unknown error occurred.')
         break;
     }
 
-    response = '/inform{"user_location":"deny"}';
+    /*response = '/inform{"user_location":"deny"}';
     send(response);
     showBotTyping();
     $('.usrInput').val('');
-    $('#userInput').prop('disabled', false);
+    $('#userInput').prop('disabled', false);*/
   }
 
   render() {
@@ -511,15 +540,15 @@ export default class ArticulateChatbotWidget extends Component {
 
 ArticulateChatbotWidget.propTypes = {
   name: PropTypes.string,
+  articulateHost: PropTypes.string.isRequired,
+  articulatePort: PropTypes.string.isRequired,
+  articulateWSPort: PropTypes.string.isRequired,
+  connectionId: PropTypes.string.isRequired,
+  botAvatarURL: PropTypes.string,
   clearItemMenuLabel: PropTypes.string,
   restartItemMenuLabel: PropTypes.string,
   closeItemMenuLabel: PropTypes.string,
-  inputPlaceholder: PropTypes.string,
-  botAvatarURL: PropTypes.string,
-  connectionId: PropTypes.string,
-  socketUrl: PropTypes.string,
-  socketPath: PropTypes.string,
-  converseUrl: PropTypes.string
+  inputPlaceholder: PropTypes.string
 };
 
 ArticulateChatbotWidget.defaultProps = {
