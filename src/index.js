@@ -444,9 +444,11 @@ export default class ArticulateChatbotWidget extends Component {
       restartItemMenuLabel,
       closeItemMenuLabel,
       inputPlaceholder,
-      botAvatarURL
+      botAvatarURL,
+      userAvatarURL
     } = this.props;
     const botAvatarImage = botAvatarURL || botAvatar;
+    const userAvatarImage = userAvatarURL || userAvatar;
     return (
       <div className="container">
         {
@@ -500,7 +502,7 @@ export default class ArticulateChatbotWidget extends Component {
                       this.renderBotResponse(message.response, index)
                     :
                       <React.Fragment key={`message_${index}`}>
-                        <img className="userAvatar" src={userAvatar} />
+                        <img className="userAvatar" src={userAvatarImage} />
                         <p className="userMsg">{message.message}</p>
                         <div className="clearfix" />
                       </React.Fragment>
@@ -567,6 +569,7 @@ ArticulateChatbotWidget.propTypes = {
   articulateWSPort: PropTypes.string.isRequired,
   connectionId: PropTypes.string.isRequired,
   botAvatarURL: PropTypes.string,
+  userAvatarURL: PropTypes.string,
   clearItemMenuLabel: PropTypes.string,
   restartItemMenuLabel: PropTypes.string,
   closeItemMenuLabel: PropTypes.string,
@@ -580,4 +583,5 @@ ArticulateChatbotWidget.defaultProps = {
   closeItemMenuLabel: 'Close',
   inputPlaceholder: 'Type a message...',
   botAvatarURL: '',
+  userAvatarURL: ''
 };
