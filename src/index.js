@@ -362,13 +362,35 @@ export default class ArticulateChatbotWidget extends Component {
         }
         break;
       default:
-        return (
-          <React.Fragment key={`message_${index}`}>
-            <img className="botAvatar" src={botAvatarImage} />
-            <p className="botMsg">{response.textResponse}</p>
-            <div className="clearfix" />
-          </React.Fragment>
-        )
+        if (response.quickResponses){
+          const quickResponses = response.quickResponses;
+          return (
+            <React.Fragment key={`message_${index}`}>
+              <img className="botAvatar" src={botAvatarImage} />
+              <p className="botMsg">{response.textResponse}</p>
+              <div className="clearfix" />
+              <div className="quickReplies">
+                {quickResponses.map((quickResponse, index) => {
+                  return (
+                    <div key={`quickResponse${index}`} className="chip" onClick={() => { this.addNewUserMessage(quickResponse); }}>
+                      {quickResponse}
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="clearfix" />
+            </React.Fragment>
+          );
+        }
+        else {
+          return (
+            <React.Fragment key={`message_${index}`}>
+              <img className="botAvatar" src={botAvatarImage} />
+              <p className="botMsg">{response.textResponse}</p>
+              <div className="clearfix" />
+            </React.Fragment>
+          )
+        }
     }
   }
 
