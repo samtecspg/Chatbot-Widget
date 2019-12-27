@@ -13,6 +13,10 @@ const plugin = {
         connectionId={args.connectionId}
         botAvatarURL={args.botAvatarURL}
         userAvatarURL={args.userAvatarURL}
+        clearItemMenuLabel={args.clearItemMenuLabel}
+        restartItemMenuLabel={args.restartItemMenuLabel}
+        closeItemMenuLabel={args.closeItemMenuLabel}
+        inputPlaceholder={args.inputPlaceholder}
       />, document.querySelector(args.selector)
     );
   }
