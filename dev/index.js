@@ -4,7 +4,7 @@ import ArticulateChatbotWidget from '../src/index'
 
 ReactDom.render(
   <ArticulateChatbotWidget
-    name='Lynx'
+    name='Generic Name'
     articulateHost='localhost'
     articulatePort='8080'
     articulateWSPort='7500'
