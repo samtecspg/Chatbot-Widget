@@ -5,12 +5,12 @@
   "main": "./lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
-    "dev": "cp src/style.css dev/ && webpack-dev-server --config ./dev/webpack.config.js",
+    "dev": "cp src/style.css dev/ && cp -R src/img dev/ && webpack-dev-server --config ./dev/webpack.config.js",
     "lint": "eslint src || exit 0",
     "lint-fix": "eslint src --fix || exit 0",
     "prettier": "prettier --config .prettierrc --write src/**/**/*.js",
     "build": "cross-env babel src --out-dir lib",
-    "copy": "cp src/style.css lib/",
+    "copy": "cp src/style.css lib/ && cp -R src/img lib/",
     "prepublish": "npm run clean && npm run build && npm run copy",
     "dist": "webpack --config ./webpack.config.prod.js"
   },

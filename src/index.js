@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './style.css';
-import botAvatar from '../static/img/botAvatar.png';
-import userAvatar from '../static/img/userAvatar.jpg';
+import botAvatar from './img/botAvatar.png';
+import userAvatar from './img/userAvatar.jpg';
 import MoreVert from '@material-ui/icons/MoreVert';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
