@@ -1,11 +1,7 @@
-.container {
-	font-family: 'Raleway', sans-serif;
-}
-
-
 /* ============= css related to chats =============== */
 
 .widget {
+	font-family: 'Raleway', sans-serif;
 	width: 350px;
 	right: 15px;
 	height: 500px;

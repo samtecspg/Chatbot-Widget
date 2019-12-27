@@ -1,6 +1,6 @@
 {
   "name": "articulate-chatbot-widget",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Chatbot widget for Articulate based on JiteshGaikwad Chatbot-Widget",
   "main": "./lib/index.js",
   "scripts": {
