@@ -41,3 +41,6 @@ jspm_packages
 
 #Yarn logs
 yarn-error.log
+
+#DS_STORE
+.DS_Store
