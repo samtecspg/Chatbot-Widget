@@ -3,14 +3,20 @@ import PropTypes from 'prop-types';
 import './style.css';
 import botAvatar from '../static/img/botAvatar.png';
 import userAvatar from '../static/img/userAvatar.jpg';
-import { MoreVert, Send } from '@material-ui/icons';
+import MoreVert from '@material-ui/icons/MoreVert';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Send from '@material-ui/icons/Send';
 import Nes from 'nes';
 import Guid from 'guid';
 import Collapsible from './Components/Collapsible';
 import CollapsibleItem from './Components/CollapsibleItem';
 
-import { FaChevronCircleLeft, FaChevronCircleRight } from 'react-icons/fa';
-import { Menu, MenuItem, IconButton, Grid, Input } from '@material-ui/core';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@material-ui/core/IconButton';
+import Grid from '@material-ui/core/Grid';
+import Input from '@material-ui/core/Input';
 
 export default class ArticulateChatbotWidget extends Component {
 
@@ -30,96 +36,7 @@ export default class ArticulateChatbotWidget extends Component {
       showChatWindow: false,
       userMessage: '',
       botIsTyping: false,
-      messages: [
-        {
-          bot: true,
-          response: {
-            type: 'plainText',
-            textResponse: 'Hi this is a text response'
-          }
-        },
-        {
-          bot: true,
-          response: {
-            type: 'image',
-            image: 'https://images.psg.media/media/67884/une-icardi.jpg'
-          }
-        },
-        {
-          bot: true,
-          response: {
-            type: 'buttons',
-            buttons: [
-              {
-                payload: 'Hi',
-                title: 'Option 1'
-              },
-              {
-                payload: 'thanks',
-                title: 'Option 2'
-              },
-              {
-                payload: 'bye',
-                title: 'Option 3'
-              }
-            ]
-          }
-        },
-        {
-          bot: true,
-          response: {
-            type: 'quickResponses',
-            quickResponses: [
-              'this is quick reply 1',
-              'this is quick reply 2',
-              'this is quick reply 3'
-            ]
-          }
-        },
-        {
-          bot: true,
-          response: {
-            type: 'cardsCarousel',
-            cards: [
-              {
-                title: 'PSG vs Saint Etienne',
-                image: 'https://images.psg.media/media/66682/diapo-asse-30-mbappe.jpg',
-                rating: 3.5
-              },
-              {
-                title: 'Le Mans vs PSG',
-                image: 'https://images.psg.media/media/68249/diapo18.jpg',
-                rating: 2
-              },
-              {
-                title: 'PSG vs Galatasaray',
-                image: 'https://images.psg.media/media/67884/une-icardi.jpg',
-                rating: 5
-              }
-            ]
-          }
-        },
-        {
-          bot: true,
-          response: {
-            type: 'collapsible',
-            items: [
-              {
-                title: 'PSG vs Saint Etienne',
-                description: 'https://images.psg.media/media/66682/diapo-asse-30-mbappe.jpg'
-              },
-              {
-                title: 'PSG vs Saint Etienne',
-                description: 'https://images.psg.media/media/66682/diapo-asse-30-mbappe.jpg'
-              },
-              {
-                title: 'PSG vs Saint Etienne',
-                description: 'https://images.psg.media/media/66682/diapo-asse-30-mbappe.jpg'
-              }
-            ]
-          }
-        }
-      ],
+      messages: [],
       client: null,
       socketClientConnected: false,
       messagesCount: 6,
@@ -320,10 +237,10 @@ export default class ArticulateChatbotWidget extends Component {
                 cards.length > 2 ?
                   <React.Fragment>
                     <span onClick={() => { document.querySelector('.cards_scroller').scrollBy(-225, 0); }} className="arrow prev">
-                      <FaChevronCircleLeft />
+                      <ChevronLeftIcon style={{fontSize: "3rem"}} />
                     </span>
                     <span onClick={() => { document.querySelector('.cards_scroller').scrollBy(225, 0); }} className="arrow next" >
-                      <FaChevronCircleRight />
+                      <ChevronRightIcon style={{fontSize: "3rem"}} />
                     </span>
                   </React.Fragment> :
                   null

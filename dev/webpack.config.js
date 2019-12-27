@@ -1,6 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: [path.resolve(__dirname, "./index.js")],
@@ -14,7 +15,7 @@ module.exports = {
   },
   devtool: "cheap-module-eval-source-map",
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js?$/,
         loader: "babel-loader",
@@ -32,14 +33,19 @@ module.exports = {
         ],
       },
       {
-        test: /\.css/,
-        use: ExtractTextPlugin.extract({
-          fallback: "style-loader",
-          use: "css-loader"
-        })
+        test: /\.css$/i,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader'
+        ]
       }
     ]
   },
   watch: true,
-  plugins: [new ExtractTextPlugin("style.css")]
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'styles.css',
+      chunkFileName: '[id].css'
+    }),
+  ],
 };

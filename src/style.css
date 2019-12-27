@@ -475,7 +475,7 @@ div.content_data::-webkit-scrollbar {
 .cards .arrow {
 	cursor: pointer;
 	position: absolute;
-	top: 50%;
+	top: 38%;
 	transform: translateY(-50%);
 	height: 30px;
 	width: 30px;
