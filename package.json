@@ -1,6 +1,6 @@
 {
   "name": "articulate-chatbot-widget",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Chatbot widget for Articulate based on JiteshGaikwad Chatbot-Widget",
   "main": "./lib/index.js",
   "scripts": {
@@ -23,9 +23,9 @@
     "url": "git+https://github.com/samtecspg/articulate-chatbot-widget"
   },
   "keywords": [
-    "boilerplate",
-    "react",
-    "npm"
+    "articulate",
+    "chatbot",
+    "widget"
   ],
   "author": "Samtec SPG",
   "license": "MIT",
