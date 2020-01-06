@@ -29,7 +29,8 @@ export default class ArticulateChatbotWidget extends Component {
     this.renderBotResponse = this.renderBotResponse.bind(this);
     this.scrollToBottomOfChat = this.scrollToBottomOfChat.bind(this);
     this.getUserPosition = this.getUserPosition.bind(this);
-    this.handleLocationAccessError = this.handleLocationAccessError.bind(this)
+    this.handleLocationAccessError = this.handleLocationAccessError.bind(this);
+    this.getWelcomeMessage = this.getWelcomeMessage.bind(this);
     this.state = {
       anchorEl: null,
       openMenu: false,
@@ -52,6 +53,7 @@ export default class ArticulateChatbotWidget extends Component {
       const newSessionId = Guid.create().toString();
       sessionId = newSessionId;
       localStorage.setItem('sessionId', newSessionId);
+      this.getWelcomeMessage();
     }
     return sessionId;
   }
@@ -123,6 +125,24 @@ export default class ArticulateChatbotWidget extends Component {
     }
   }
 
+  getWelcomeMessage() {
+    const { articulateHost, articulatePort, connectionId } = this.props;
+    const sessionId = this.getSessionId();
+    const postPayload = {
+      sessionId,
+      text: 'Chat Widget request for Welcome Message',
+      isWelcomeMessage: true,
+    };
+    fetch(`http://${articulateHost}:${articulatePort}/api/connection/${connectionId}/external`, {
+      method: 'post',
+      body: JSON.stringify(postPayload)
+    });
+    this.setState({
+      userMessage: '',
+      botIsTyping: true
+    });
+  }
+
   restartSession() {
     const { connectionId, articulateHost, articulatePort } = this.props;
     const sessionId = this.getSessionId();
@@ -130,6 +150,7 @@ export default class ArticulateChatbotWidget extends Component {
       method: 'delete'
     });
     this.clearChat();
+    this.getWelcomeMessage();
   }
 
   clearChat() {
@@ -147,9 +168,9 @@ export default class ArticulateChatbotWidget extends Component {
     terminalResultsDiv.scrollTop = terminalResultsDiv.scrollHeight + 100;
   }
 
-  componentDidUpdate(){
+  componentDidUpdate() {
     const { messagesCount, messages } = this.state;
-    if (messagesCount < messages.length){
+    if (messagesCount < messages.length) {
       this.setState({
         messagesCount: messages.length
       });
@@ -237,10 +258,10 @@ export default class ArticulateChatbotWidget extends Component {
                 cards.length > 2 ?
                   <React.Fragment>
                     <span onClick={() => { document.querySelector('.cards_scroller').scrollBy(-225, 0); }} className="arrow prev">
-                      <ChevronLeftIcon style={{fontSize: "3rem"}} />
+                      <ChevronLeftIcon style={{ fontSize: "3rem" }} />
                     </span>
                     <span onClick={() => { document.querySelector('.cards_scroller').scrollBy(225, 0); }} className="arrow next" >
-                      <ChevronRightIcon style={{fontSize: "3rem"}} />
+                      <ChevronRightIcon style={{ fontSize: "3rem" }} />
                     </span>
                   </React.Fragment> :
                   null
@@ -279,7 +300,7 @@ export default class ArticulateChatbotWidget extends Component {
         }
         break;
       default:
-        if (response.quickResponses){
+        if (response.quickResponses) {
           const quickResponses = response.quickResponses;
           return (
             <React.Fragment key={`message_${index}`}>
@@ -413,30 +434,30 @@ export default class ArticulateChatbotWidget extends Component {
               <div className="chats" id="chats">
                 <div className="clearfix" />
                 {
-                messages.map((message, index) => {
-                  return (
-                    message.bot ?
-                      this.renderBotResponse(message.response, index)
-                    :
-                      <React.Fragment key={`message_${index}`}>
-                        <img className="userAvatar" src={userAvatarImage} />
-                        <p className="userMsg">{message.message}</p>
-                        <div className="clearfix" />
-                      </React.Fragment>
-                  )
-                })
-              }
+                  messages.map((message, index) => {
+                    return (
+                      message.bot ?
+                        this.renderBotResponse(message.response, index)
+                        :
+                        <React.Fragment key={`message_${index}`}>
+                          <img className="userAvatar" src={userAvatarImage} />
+                          <p className="userMsg">{message.message}</p>
+                          <div className="clearfix" />
+                        </React.Fragment>
+                    )
+                  })
+                }
                 {
-                botIsTyping &&
-                <React.Fragment>
-                  <img className="botAvatar" src={botAvatarImage} />
-                  <div className="botTyping">
-                    <div className="bounce1" />
-                    <div className="bounce2" />
-                    <div className="bounce3" />
-                  </div>
-                </React.Fragment>
-              }
+                  botIsTyping &&
+                  <React.Fragment>
+                    <img className="botAvatar" src={botAvatarImage} />
+                    <div className="botTyping">
+                      <div className="bounce1" />
+                      <div className="bounce2" />
+                      <div className="bounce3" />
+                    </div>
+                  </React.Fragment>
+                }
               </div>
 
               <Grid
@@ -470,9 +491,9 @@ export default class ArticulateChatbotWidget extends Component {
                 </IconButton>
               </Grid>
             </div>
-          : <div className="profile_div" onClick={() => { this.setState({ showChatWindow: true }) }} id="profile_div">
-            <img className="imgProfile" src={botAvatarImage} />
-          </div>
+            : <div className="profile_div" onClick={() => { this.setState({ showChatWindow: true }) }} id="profile_div">
+              <img className="imgProfile" src={botAvatarImage} />
+            </div>
         }
       </div>
     );
