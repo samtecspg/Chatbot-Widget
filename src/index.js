@@ -18,6 +18,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import Input from '@material-ui/core/Input';
 
+import ReactAudioPlayer from 'react-audio-player';
+import { Player } from 'video-react';
+
 export default class ArticulateChatbotWidget extends Component {
 
   constructor(props) {
@@ -216,6 +219,25 @@ export default class ArticulateChatbotWidget extends Component {
     if (response.richResponses && response.richResponses.length > 0){
       response.richResponses.forEach((richResponse, richResponseIndex) => {
         switch (richResponse.type) {
+          case 'audio':
+            responses.push(
+              <ReactAudioPlayer
+                className={'audio-message'}
+                key={`message_${index}_richResponse_${richResponseIndex}`}
+                src={richResponse.data.audio}
+                controls
+              />
+            );
+            break;
+          case 'video':
+            responses.push(
+              <Player
+                key={`message_${index}_richResponse_${richResponseIndex}`}
+                playsInline
+                src={richResponse.data.video}
+              />
+            )
+            break;
           case 'image':
             responses.push(
               <React.Fragment key={`message_${index}_richResponse_${richResponseIndex}`}>
