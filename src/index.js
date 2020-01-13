@@ -72,7 +72,7 @@ export default class ArticulateChatbotWidget extends Component {
         });
 
         const handler = response => {
-          if (response) {
+          if (response && !response.ignore) {
             this.addNewBotMessage(response);
           }
         };
@@ -141,8 +141,7 @@ export default class ArticulateChatbotWidget extends Component {
       body: JSON.stringify(postPayload)
     });
     this.setState({
-      userMessage: '',
-      botIsTyping: true
+      userMessage: ''
     });
   }
 
@@ -186,7 +185,7 @@ export default class ArticulateChatbotWidget extends Component {
     const botAvatarImage = botAvatarURL || botAvatar;
     let responses = []
 
-    if (response.textResponse){
+    if (response.textResponse) {
       responses.push(
         <React.Fragment key={`message_${index}_textResponse`}>
           {renderBotAvatar && <img className="botAvatar" src={botAvatarImage} />}
@@ -216,7 +215,7 @@ export default class ArticulateChatbotWidget extends Component {
       );
     }
 
-    if (response.richResponses && response.richResponses.length > 0){
+    if (response.richResponses && response.richResponses.length > 0) {
       response.richResponses.forEach((richResponse, richResponseIndex) => {
         switch (richResponse.type) {
           case 'audio':
@@ -353,7 +352,7 @@ export default class ArticulateChatbotWidget extends Component {
             break;
           default:
             break;
-          }
+        }
       });
     }
     return responses;
@@ -464,11 +463,11 @@ export default class ArticulateChatbotWidget extends Component {
                   messages.map((message, index) => {
                     return (
                       message.bot ?
-                        this.renderBotResponse(message.response, index, index === 0 || !messages[index-1].bot )
+                        this.renderBotResponse(message.response, index, index === 0 || !messages[index - 1].bot)
                         :
                         <React.Fragment key={`message_${index}`}>
-                          {index === 0 || messages[index-1].bot ? <img className="userAvatar" src={userAvatarImage} /> : null}
-                          <p className={`userMsg ${(index > 0 && !messages[index-1].bot) && 'userMessageWithoutAvatar'}`}>{message.message}</p>
+                          {index === 0 || messages[index - 1].bot ? <img className="userAvatar" src={userAvatarImage} /> : null}
+                          <p className={`userMsg ${(index > 0 && !messages[index - 1].bot) && 'userMessageWithoutAvatar'}`}>{message.message}</p>
                           <div className="clearfix" />
                         </React.Fragment>
                     )
