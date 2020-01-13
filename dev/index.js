@@ -8,7 +8,7 @@ ReactDom.render(
     articulateHost='localhost'
     articulatePort='8080'
     articulateWSPort='7500'
-    connectionId='f7bbf110-2606-11ea-a5c2-f59e163fc7fb'
+    connectionId='d056c8e0-3630-11ea-aab3-976829e056cb'
   />,
   document.getElementById('app')
 )

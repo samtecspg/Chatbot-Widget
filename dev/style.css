@@ -385,7 +385,13 @@ div.content_data::-webkit-scrollbar {
 	padding-right: 10px;
 }
 
+.botMessageWithoutAvatar {
+	margin-left: 10%;
+}
 
+.userMessageWithoutAvatar {
+	margin-right: 10%;
+}
 /* css for image card */
 
 .imgcard {
@@ -505,6 +511,7 @@ div.content_data::-webkit-scrollbar {
 }
 
 .cards_scroller div.carousel_cards {
+	cursor: pointer;
 	min-width: 50%;
 	min-height: 70%;
 	background: #b5b5b5;

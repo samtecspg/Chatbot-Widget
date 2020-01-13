@@ -178,158 +178,163 @@ export default class ArticulateChatbotWidget extends Component {
     }
   }
 
-  renderBotResponse(response, index) {
+  renderBotResponse(response, index, renderBotAvatar) {
     const { botAvatarURL } = this.props;
     const botAvatarImage = botAvatarURL || botAvatar;
-    switch (response.type) {
-      case 'plainText':
-        return (
-          <React.Fragment key={`message_${index}`}>
-            <img className="botAvatar" src={botAvatarImage} />
-            <p className="botMsg">{response.textResponse}</p>
-            <div className="clearfix" />
-          </React.Fragment>
-        );
-      case 'image':
-        return (
-          <React.Fragment key={`message_${index}`}>
-            <div className="singleCard">
-              <a target="_blank" href={response.image}><img className="imgcard" src={response.image} /></a>
-            </div>
-            <div className="clearfix" />
-          </React.Fragment>
-        );
-      case 'buttons':
-        const buttons = response.buttons;
-        return (
-          <div key={`message_${index}`} className="singleCard">
-            <div className="suggestions">
-              <div className="button-group">
-                {buttons.map((button, index) => {
-                  return (
-                    <div key={`button_${index}`} className="button-chip" onClick={() => { this.addNewUserMessage(button.payload) }}>
-                      {button.title}
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
+    let responses = []
+
+    if (response.textResponse){
+      responses.push(
+        <React.Fragment key={`message_${index}_textResponse`}>
+          {renderBotAvatar && <img className="botAvatar" src={botAvatarImage} />}
+          <p className={`botMsg ${!renderBotAvatar && 'botMessageWithoutAvatar'}`}>{response.textResponse}</p>
+          <div className="clearfix" />
+        </React.Fragment>
+      )
+    }
+
+    if (response.quickResponses && response.quickResponses.length > 0) {
+      responses.push(
+        <React.Fragment key={`message_${index}_quickResponses`}>
+          {renderBotAvatar && <img className="botAvatar" src={botAvatarImage} />}
+          <p className={`botMsg ${!renderBotAvatar && 'botMessageWithoutAvatar'}`}>{response.textResponse}</p>
+          <div className="clearfix" />
+          <div className="quickReplies">
+            {response.quickResponses.map((quickResponse, index) => {
+              return (
+                <div key={`quickResponse${index}`} className="chip" onClick={() => { this.addNewUserMessage(quickResponse); }}>
+                  {quickResponse}
+                </div>
+              )
+            })}
           </div>
-        );
-      case 'quickResponses':
-        const quickResponses = response.quickResponses;
-        return (
-          <React.Fragment key={`message_${index}`}>
-            <div className="quickReplies">
-              {quickResponses.map((quickResponse, index) => {
-                return (
-                  <div key={`quickResponse${index}`} className="chip" onClick={() => { this.addNewUserMessage(quickResponse); }}>
-                    {quickResponse}
+          <div className="clearfix" />
+        </React.Fragment>
+      );
+    }
+
+    if (response.richResponses && response.richResponses.length > 0){
+      response.richResponses.forEach((richResponse, richResponseIndex) => {
+        switch (richResponse.type) {
+          case 'image':
+            responses.push(
+              <React.Fragment key={`message_${index}_richResponse_${richResponseIndex}`}>
+                <div className="singleCard">
+                  <a target="_blank" href={richResponse.data.imageURL}><img className="imgcard" src={richResponse.data.imageURL} /></a>
+                </div>
+                <div className="clearfix" />
+              </React.Fragment>
+            );
+            break;
+          case 'buttons':
+            const buttons = richResponse.data;
+            responses.push(
+              <div key={`message_${index}_richResponse_${richResponseIndex}`} className="singleCard">
+                <div className="suggestions">
+                  <div className="button-group">
+                    {buttons.map((button, index) => {
+                      return (
+                        <div key={`button_${index}`} className="button-chip" onClick={() => { window.open(button.linkURL, "_blank"); }}>
+                          {button.label}
+                        </div>
+                      )
+                    })}
                   </div>
-                )
-              })}
-            </div>
-            <div className="clearfix" />
-          </React.Fragment>
-        );
-      case 'cardsCarousel':
-        const cards = response.cards;
-        return (
-          <div key={`message_${index}`} id="paginated_cards" className="cards">
-            <div className="cards_scroller">
-              {
-                cards.map((card, index) => {
-                  return (
-                    <div key={`card_${index}`} className="carousel_cards in-left">
-                      <img className="cardBackgroundImage" src={card.image} />
-                      <div className="cardFooter">
-                        <span className="cardTitle" title={card.title}>{card.title}</span>
-                        <div className="cardDescription">
-                          <div className="stars-outer">
-                            <div className="stars-inner" style={{ width: `${Math.round((card.rating / 5) * 100)}%` }} />
+                </div>
+              </div>
+            );
+            break;
+          case 'quickResponses':
+            const quickResponses = richResponse.data.quickResponses;
+            responses.push(
+              <React.Fragment key={`message_${index}_richResponse_${richResponseIndex}`}>
+                <div className="quickReplies">
+                  {quickResponses.map((quickResponse, index) => {
+                    return (
+                      <div key={`quickResponse${index}`} className="chip" onClick={() => { this.addNewUserMessage(quickResponse); }}>
+                        {quickResponse}
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="clearfix" />
+              </React.Fragment>
+            );
+            break;
+          case 'cardsCarousel':
+            const cards = richResponse.data;
+            responses.push(
+              <div key={`message_${index}_richResponse_${richResponseIndex}`} id="paginated_cards" className="cards">
+                <div className="cards_scroller">
+                  {
+                    cards.map((card, index) => {
+                      return (
+                        <div key={`card_${index}`} className="carousel_cards in-left" onClick={() => { window.open(card.linkURL, "_blank"); }}>
+                          <img className="cardBackgroundImage" src={card.imageURL} />
+                          <div className="cardFooter">
+                            <span className="cardTitle" title={card.title}>{card.title}</span>
+                            <div className="cardDescription">
+                              <span>{card.description}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  )
-                })
-              }
-              {
-                cards.length > 2 ?
-                  <React.Fragment>
-                    <span onClick={() => { document.querySelector('.cards_scroller').scrollBy(-225, 0); }} className="arrow prev">
-                      <ChevronLeftIcon style={{ fontSize: "3rem" }} />
-                    </span>
-                    <span onClick={() => { document.querySelector('.cards_scroller').scrollBy(225, 0); }} className="arrow next" >
-                      <ChevronRightIcon style={{ fontSize: "3rem" }} />
-                    </span>
-                  </React.Fragment> :
-                  null
-              }
-            </div>
-          </div>
-        );
-      case 'collapsible':
-        const items = response.items;
-        return (
-          <Collapsible accordion={false} key={`message_${index}`} className="collapsible-ul" defaultActiveKey={1}>
-            {
-              items.map((item, index) => {
-                return (
-                  <CollapsibleItem header={item.title} key={`item_${index}`}>
-                    {item.description}
-                  </CollapsibleItem>
-                )
-              })
-            }
-          </Collapsible>
-        );
-      case 'chart':
-        return (
-          <React.Fragment key={`message_${index}`}>
-            <img className="botAvatar" src={botAvatarImage} />
-            <p className="botMsg">{message.message}</p>
-            <div className="clearfix" />
-          </React.Fragment>
-        );
-      case 'location':
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(this.getUserPosition, this.handleLocationAccessError);
-        } else {
-          response = 'Geolocation is not supported by this browser.';
-        }
-        break;
-      default:
-        if (response.quickResponses) {
-          const quickResponses = response.quickResponses;
-          return (
-            <React.Fragment key={`message_${index}`}>
-              <img className="botAvatar" src={botAvatarImage} />
-              <p className="botMsg">{response.textResponse}</p>
-              <div className="clearfix" />
-              <div className="quickReplies">
-                {quickResponses.map((quickResponse, index) => {
-                  return (
-                    <div key={`quickResponse${index}`} className="chip" onClick={() => { this.addNewUserMessage(quickResponse); }}>
-                      {quickResponse}
-                    </div>
-                  )
-                })}
+                      )
+                    })
+                  }
+                  {
+                    cards.length > 1 ?
+                      <React.Fragment>
+                        <span onClick={() => { document.querySelector('.cards_scroller').scrollBy(-225, 0); }} className="arrow prev">
+                          <ChevronLeftIcon style={{ fontSize: "3rem" }} />
+                        </span>
+                        <span onClick={() => { document.querySelector('.cards_scroller').scrollBy(225, 0); }} className="arrow next" >
+                          <ChevronRightIcon style={{ fontSize: "3rem" }} />
+                        </span>
+                      </React.Fragment> :
+                      null
+                  }
+                </div>
               </div>
-              <div className="clearfix" />
-            </React.Fragment>
-          );
-        }
-        else {
-          return (
-            <React.Fragment key={`message_${index}`}>
-              <img className="botAvatar" src={botAvatarImage} />
-              <p className="botMsg">{response.textResponse}</p>
-              <div className="clearfix" />
-            </React.Fragment>
-          )
-        }
+            );
+            break;
+          case 'collapsible':
+            const items = richResponse.data;
+            responses.push(
+              <Collapsible accordion={false} key={`message_${index}_richResponse_${richResponseIndex}`} className="collapsible-ul" defaultActiveKey={1}>
+                {
+                  items.map((item, index) => {
+                    return (
+                      <CollapsibleItem header={item.title} key={`item_${index}`}>
+                        {item.content}
+                      </CollapsibleItem>
+                    )
+                  })
+                }
+              </Collapsible>
+            );
+            break;
+          case 'chart':
+            responses.push(
+              <React.Fragment key={`message_${index}_richResponse_${richResponseIndex}`}>
+                {renderBotAvatar && <img className="botAvatar" src={botAvatarImage} />}
+                <p className={`botMsg ${!renderBotAvatar && 'botMessageWithoutAvatar'}`}>{message.message}</p>
+                <div className="clearfix" />
+              </React.Fragment>
+            );
+            break;
+          case 'location':
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(this.getUserPosition, this.handleLocationAccessError);
+            } else {
+              response = 'Geolocation is not supported by this browser.';
+            }
+            break;
+          default:
+            break;
+          }
+      });
     }
+    return responses;
   }
 
   getUserPosition(position) {
@@ -437,11 +442,11 @@ export default class ArticulateChatbotWidget extends Component {
                   messages.map((message, index) => {
                     return (
                       message.bot ?
-                        this.renderBotResponse(message.response, index)
+                        this.renderBotResponse(message.response, index, index === 0 || !messages[index-1].bot )
                         :
                         <React.Fragment key={`message_${index}`}>
-                          <img className="userAvatar" src={userAvatarImage} />
-                          <p className="userMsg">{message.message}</p>
+                          {index === 0 || messages[index-1].bot ? <img className="userAvatar" src={userAvatarImage} /> : null}
+                          <p className={`userMsg ${(index > 0 && !messages[index-1].bot) && 'userMessageWithoutAvatar'}`}>{message.message}</p>
                           <div className="clearfix" />
                         </React.Fragment>
                     )
@@ -471,8 +476,8 @@ export default class ArticulateChatbotWidget extends Component {
                   multiline
                   inputProps={{
                     style: {
-                      height: 'auto',
-                      overflow: 'scroll'
+                      height: '38px',
+                      overflowY: 'scroll'
                     }
                   }}
                   value={userMessage}
