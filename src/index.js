@@ -186,7 +186,7 @@ export default class ArticulateChatbotWidget extends Component {
     const botAvatarImage = botAvatarURL || botAvatar;
     let responses = []
 
-    if (response.textResponse){
+    if (response.textResponse && !response.disableTextResponse){
       responses.push(
         <React.Fragment key={`message_${index}_textResponse`}>
           {renderBotAvatar && <img className="botAvatar" src={botAvatarImage} />}
@@ -333,6 +333,15 @@ export default class ArticulateChatbotWidget extends Component {
                   })
                 }
               </Collapsible>
+            );
+            break;
+          case 'richText':
+            responses.push(
+              <React.Fragment key={`message_${index}_richResponse_${richResponseIndex}`}>
+                {renderBotAvatar && <img className="botAvatar" src={botAvatarImage} />}
+                <div className={`botMsg ${!renderBotAvatar && 'botMessageWithoutAvatar'}`} dangerouslySetInnerHTML={{ __html: richResponse.data.text }} />
+                <div className="clearfix" />
+              </React.Fragment>
             );
             break;
           case 'chart':
